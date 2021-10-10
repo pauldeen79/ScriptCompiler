@@ -34,10 +34,10 @@ jobs:
       - name: Test
         run: dotnet test -c Release
       - name: Pack
-        if: matrix.os == 'ubuntu-latest'
+        if: matrix.os == 'windows-latest'
         run: dotnet pack -v normal -c Release -o ./artifacts --no-restore --include-symbols --include-source -p:PackageVersion=$GITHUB_RUN_ID
       - name: Upload Artifact
-        if: matrix.os == 'ubuntu-latest'
+        if: matrix.os == 'windows-latest'
         uses: actions/upload-artifact@v2
         with:
           name: nupkg
@@ -45,7 +45,7 @@ jobs:
   prerelease:
     needs: build
     if: github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     steps:
       - name: Download Artifact
         uses: actions/download-artifact@v1
