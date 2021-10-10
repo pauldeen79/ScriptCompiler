@@ -19,7 +19,7 @@ jobs:
     strategy:
       matrix:
         #os: [ ubuntu-latest, windows-latest, macos-latest ]
-        os: [ ubuntu-latest ]
+        os: [ windows-latest ]
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -62,7 +62,7 @@ jobs:
   deploy:
     needs: build
     if: github.event_name == 'release'
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     steps:
       - uses: actions/checkout@v2
       - name: Setup .NET Core
