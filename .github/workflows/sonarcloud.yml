@@ -1,0 +1,32 @@
+name: SonarCloud
+on:
+  push:
+    branches:
+      - main
+      - sonar/*
+  pull_request:
+    types: [opened, synchronize, reopened]
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 5.0.x
+      - name: Fetch origin/main
+        run: |
+          git fetch --no-tags --prune --depth=1 origin main
+      - name: sonarscan-dotnet
+        uses: highbyte/sonarscan-dotnet@2.0
+        with:
+          sonarProjectKey: pauldeen79_ScriptCompiler
+          sonarProjectName: ScriptCompiler
+          sonarOrganization: pauldeen79
+          dotnetTestArguments: --logger trx --collect:"XPlat Code Coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover
+          sonarBeginArguments: /d:sonar.cs.opencover.reportsPaths="**/TestResults/**/coverage.opencover.xml" -d:sonar.cs.vstest.reportsPaths="**/TestResults/*.trx"
+    env:
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
