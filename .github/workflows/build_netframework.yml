@@ -6,10 +6,6 @@ on:
     types:
       - published
 env:
-  # Stop wasting time caching packages
-  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
-  # Disable sending usage data to Microsoft
-  DOTNET_CLI_TELEMETRY_OPTOUT: true
   # Official NuGet Feed settings
   NUGET_FEED: https://api.nuget.org/v3/index.json
   NUGET_KEY: ${{ secrets.NUGET_TOKEN }}
@@ -20,20 +16,25 @@ jobs:
       matrix:
         os: [ windows-latest ]
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-
-      - name: Restore NuGet Packages
-        run: nuget restore ScriptCompiler.NetFramework.sln
- 
-      - name: Build and Publish Web App
-        run: msbuild ScriptCompiler.NetFramework.sln /p:Configuration=Release /p:DeployOnBuild=true
+      - uses: actions/checkout@master
+      - uses: nuget/setup-nuget@v1.0.2
+        with:
+          nuget-api-key: ${{ secrets.NuGetAPIKey }}
+          nuget-version: 'latest'
+      - name: Setup MSBuild.exe
+        uses: warrenbuckley/Setup-MSBuild@v1
+        env:
+          working-directory: src
+      - run: msbuild -t:restore ScriptCompiler.NetFramework.sln
+        working-directory: src
+      - run: msbuild -t:build ScriptCompiler.NetFramework.sln
+        working-directory: src
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v2
         with:
           name: nupkg
-          path: bin\Release\Publish
+          path: bin\Release
   prerelease:
     needs: build
     if: github.ref == 'refs/heads/main'
