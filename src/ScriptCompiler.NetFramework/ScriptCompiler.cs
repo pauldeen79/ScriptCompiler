@@ -52,41 +52,57 @@ namespace ScriptCompiler.NetFramework
                 CompilerOptions = "/d:TRACE" //important to allow tracing
             };
 
-            //Add the required assemblies
-            if (referencedAssemblies != null)
-            {
-                foreach (string reference in referencedAssemblies)
-                {
-                    parameters.ReferencedAssemblies.Add(reference);
-                }
-            }
-
-            if (packageReferences != null)
-            {
-                tempPath = string.IsNullOrEmpty(tempPath)
-                    ? Path.GetTempPath()
-                    : tempPath;
-
-                nugetPackageSourceUrl = string.IsNullOrEmpty(nugetPackageSourceUrl)
-                    ? "https://api.nuget.org/v3/index.json"
-                    : nugetPackageSourceUrl;
-
-                foreach (string reference in packageReferences)
-                {
-                    if (!AddNugetReference(reference, parameters.ReferencedAssemblies, referencedAssemblies, tempPath, nugetPackageSourceUrl))
-                    {
-                        throw new ArgumentException($"Adding package reference [{reference}] failed", nameof(packageReferences));
-                    }
-                }
-
-                if (packageReferences.Any(x => x.Equals("NETStandard.Library,2.0.3,.NETStandard,Version=v2.0", StringComparison.OrdinalIgnoreCase)))
-                {
-                    var netstandard = Assembly.Load("netstandard, Version=2.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51");
-                    parameters.ReferencedAssemblies.Add(netstandard.Location);
-                }
-            }
+            AddAssemblyReferences(referencedAssemblies, parameters);
+            AddPackageReferences(referencedAssemblies, packageReferences, tempPath, nugetPackageSourceUrl, parameters);
 
             return Compile(parameters, source, language);
+        }
+
+        private static void AddAssemblyReferences(IEnumerable<string> referencedAssemblies, CompilerParameters parameters)
+        {
+            if (referencedAssemblies == null)
+            {
+                return;
+            }
+            
+            foreach (string reference in referencedAssemblies)
+            {
+                parameters.ReferencedAssemblies.Add(reference);
+            }
+        }
+
+        private static void AddPackageReferences(IEnumerable<string> referencedAssemblies,
+                                                 IEnumerable<string> packageReferences,
+                                                 string tempPath,
+                                                 string nugetPackageSourceUrl,
+                                                 CompilerParameters parameters)
+        {
+            if (packageReferences == null)
+            {
+                return;
+            }
+
+            tempPath = string.IsNullOrEmpty(tempPath)
+                ? Path.GetTempPath()
+                : tempPath;
+
+            nugetPackageSourceUrl = string.IsNullOrEmpty(nugetPackageSourceUrl)
+                ? "https://api.nuget.org/v3/index.json"
+                : nugetPackageSourceUrl;
+
+            foreach (string reference in packageReferences)
+            {
+                if (!AddNugetReference(reference, parameters.ReferencedAssemblies, referencedAssemblies, tempPath, nugetPackageSourceUrl))
+                {
+                    throw new ArgumentException($"Adding package reference [{reference}] failed", nameof(packageReferences));
+                }
+            }
+
+            if (packageReferences.Any(x => x.Equals("NETStandard.Library,2.0.3,.NETStandard,Version=v2.0", StringComparison.OrdinalIgnoreCase)))
+            {
+                var netstandard = Assembly.Load("netstandard, Version=2.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51");
+                parameters.ReferencedAssemblies.Add(netstandard.Location);
+            }
         }
 
         private static bool AddNugetReference(string reference,
