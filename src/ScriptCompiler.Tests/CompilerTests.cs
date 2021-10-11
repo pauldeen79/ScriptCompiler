@@ -59,7 +59,9 @@ namespace ScriptCompiler.Tests
             );
 
             // Assert
+            result.IsSuccessful.Should().BeTrue();
             result.Diagnostics.HasErrors().Should().BeFalse();
+            result.Errors.Should().BeEmpty();
             result.CompiledAssembly.Should().NotBeNull();
             var myClass = result.CompiledAssembly.GetExportedTypes().FirstOrDefault(x => x.Name == "MyClass");
             myClass.Should().NotBeNull();
@@ -106,7 +108,9 @@ namespace MyNamespace
                 );
 
                 // Assert
+                result.IsSuccessful.Should().BeTrue();
                 result.Diagnostics.HasErrors().Should().BeFalse();
+                result.Errors.Should().BeEmpty();
                 result.CompiledAssembly.Should().NotBeNull();
                 var myClass = result.CompiledAssembly.GetExportedTypes().FirstOrDefault(x => x.Name == "MyClass");
                 myClass.Should().NotBeNull();
@@ -159,7 +163,9 @@ namespace MyNamespace
                 );
 
                 // Assert
+                result.IsSuccessful.Should().BeTrue();
                 result.Diagnostics.HasErrors().Should().BeFalse();
+                result.Errors.Should().BeEmpty();
                 result.CompiledAssembly.Should().NotBeNull();
                 var myClass = result.CompiledAssembly.GetExportedTypes().FirstOrDefault(x => x.Name == "MyClass");
                 myClass.Should().NotBeNull();
@@ -212,7 +218,9 @@ namespace MyNamespace
                 );
 
                 // Assert
+                result.IsSuccessful.Should().BeTrue();
                 result.Diagnostics.HasErrors().Should().BeFalse();
+                result.Errors.Should().BeEmpty();
                 result.CompiledAssembly.Should().NotBeNull();
                 var myClass = result.CompiledAssembly.GetExportedTypes().FirstOrDefault(x => x.Name == "MyClass");
                 myClass.Should().NotBeNull();
@@ -265,6 +273,7 @@ namespace MyNamespace
                 );
 
                 // Assert
+                result.IsSuccessful.Should().BeTrue();
                 result.Diagnostics.HasErrors().Should().BeFalse();
                 result.CompiledAssembly.Should().NotBeNull();
                 var myClass = result.CompiledAssembly.GetExportedTypes().FirstOrDefault(x => x.Name == "MyClass");
@@ -311,7 +320,9 @@ namespace MyNamespace
             );
 
             // Assert
+            result.IsSuccessful.Should().BeFalse();
             result.Diagnostics.HasErrors().Should().BeTrue();
+            result.Errors.Should().NotBeEmpty();
             result.CompiledAssembly.Should().BeNull();
         }
     }
