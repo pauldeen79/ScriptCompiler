@@ -17,9 +17,9 @@ jobs:
         os: [ windows-latest ]
     steps:
       - uses: actions/checkout@master
-      - uses: nuget/setup-nuget@v1.0.3
+      - uses: nuget/setup-nuget@v1.0.5
         with:
-          nuget-api-key: ${{ secrets.NuGetAPIKey }}
+          nuget-api-key: ${{ secrets.NUGET_TOKEN }}
           nuget-version: 'latest'
       - name: Setup MSBuild.exe
         uses: warrenbuckley/Setup-MSBuild@v1
