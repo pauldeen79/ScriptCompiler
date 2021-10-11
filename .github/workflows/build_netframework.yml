@@ -22,7 +22,10 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+
       - name: Setup MSBuild Path
+        env:
+          ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
         uses: warrenbuckley/Setup-MSBuild@v1
        
       - name: Setup NuGet
@@ -35,7 +38,6 @@ jobs:
         run: msbuild ScriptCompiler.NetFramework.sln /p:Configuration=Release /p:DeployOnBuild=true
 
       - name: Upload Artifact
-        if: matrix.os == 'windows-latest'
         uses: actions/upload-artifact@v2
         with:
           name: nupkg
