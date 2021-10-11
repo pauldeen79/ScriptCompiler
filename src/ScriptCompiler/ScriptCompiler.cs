@@ -47,40 +47,8 @@ namespace ScriptCompiler
             var syntaxTree = CSharpSyntaxTree.ParseText(source, options: new CSharpParseOptions().WithPreprocessorSymbols("TRACE"));
             var references = new List<MetadataReference>();
 
-            //Add the required assemblies
-            if (referencedAssemblies != null)
-            {
-                foreach (string reference in referencedAssemblies)
-                {
-                    if (reference.Contains(","))
-                    {
-                        references.Add(MetadataReference.CreateFromFile(reference.Split(',')[0] + ".dll"));
-                    }
-                    else
-                    {
-                        references.Add(MetadataReference.CreateFromFile(reference));
-                    }
-                }
-            }
-            
-            if (packageReferences != null)
-            {
-                tempPath = string.IsNullOrEmpty(tempPath)
-                    ? Path.GetTempPath()
-                    : tempPath;
-
-                nugetPackageSourceUrl = string.IsNullOrEmpty(nugetPackageSourceUrl)
-                    ? "https://api.nuget.org/v3/index.json"
-                    : nugetPackageSourceUrl;
-
-                foreach (string reference in packageReferences)
-                {
-                    if (!AddNugetReference(reference, references, tempPath, nugetPackageSourceUrl))
-                    {
-                        throw new ArgumentException($"Adding package reference [{reference}] failed", nameof(packageReferences));
-                    }
-                }
-            }
+            AddAssemblyReferences(referencedAssemblies, references);
+            AddPackageReferences(packageReferences, tempPath, nugetPackageSourceUrl, references);
 
             var compilation = CSharpCompilation.Create
             (
@@ -93,6 +61,53 @@ namespace ScriptCompiler
             );
 
             return Compile(compilation, customAssemblyLoadContext);
+        }
+
+        private static void AddAssemblyReferences(IEnumerable<string> referencedAssemblies, List<MetadataReference> references)
+        {
+            if (referencedAssemblies == null)
+            {
+                return;
+            }
+            
+            foreach (string reference in referencedAssemblies)
+            {
+                if (reference.Contains(","))
+                {
+                    references.Add(MetadataReference.CreateFromFile(reference.Split(',')[0] + ".dll"));
+                }
+                else
+                {
+                    references.Add(MetadataReference.CreateFromFile(reference));
+                }
+            }
+        }
+
+        private static void AddPackageReferences(IEnumerable<string> packageReferences,
+                                                 string tempPath,
+                                                 string nugetPackageSourceUrl,
+                                                 List<MetadataReference> references)
+        {
+            if (packageReferences == null)
+            {
+                return;
+            }
+
+            tempPath = string.IsNullOrEmpty(tempPath)
+                ? Path.GetTempPath()
+                : tempPath;
+
+            nugetPackageSourceUrl = string.IsNullOrEmpty(nugetPackageSourceUrl)
+                ? "https://api.nuget.org/v3/index.json"
+                : nugetPackageSourceUrl;
+
+            foreach (string reference in packageReferences)
+            {
+                if (!AddNugetReference(reference, references, tempPath, nugetPackageSourceUrl))
+                {
+                    throw new ArgumentException($"Adding package reference [{reference}] failed", nameof(packageReferences));
+                }
+            }
         }
 
         private static bool AddNugetReference(string reference,
