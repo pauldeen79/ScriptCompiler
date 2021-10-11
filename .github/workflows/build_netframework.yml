@@ -30,7 +30,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: nupkg
-          path: ./**/*.nupkg
+          path: ./src/ScriptCompiler.NetFramework/bin/release/*.nupkg
   prerelease:
     needs: build
     if: github.ref == 'refs/heads/main'
@@ -42,7 +42,7 @@ jobs:
           name: nupkg
       - name: Push to GitHub Feed
         run: |
-          for f in ./nupkg/**/*.nupkg
+          for f in ./nupkg/*.nupkg
           do
             echo "Publishing $f"
             curl -vX PUT -u "pauldeen79:${{ secrets.FEED_TOKEN }}" -F package=@$f https://nuget.pkg.github.com/pauldeen79/
@@ -60,14 +60,14 @@ jobs:
           dotnet-version: 3.1.301
       - name: Push to GitHub Feed
         run: |
-          for f in ./nupkg/**/*.nupkg
+          for f in ./nupkg/*.nupkg
           do
             curl -vX PUT -u "pauldeen79:${{ secrets.FEED_TOKEN }}" -F package=@$f https://nuget.pkg.github.com/pauldeen79/
           done
         shell: bash
       - name: Push to NuGet Feed
         run: |
-          for f in ./nupkg/**/*.nupkg
+          for f in ./nupkg/*.nupkg
           do
             dotnet nuget push $f --source $NUGET_FEED --skip-duplicate --api-key $NUGET_KEY
           done
