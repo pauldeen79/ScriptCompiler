@@ -18,7 +18,6 @@ namespace ScriptCompiler.Tests
 
         public CompilerTests()
         {
-            // Test commit
             Sut = new ScriptCompiler();
         }
 
