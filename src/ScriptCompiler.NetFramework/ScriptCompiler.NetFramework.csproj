@@ -7,6 +7,7 @@
     <LangVersion>8.0</LangVersion>
     <PackageId>pauldeen79.ScriptCompiler.ScriptCompiler.NetFramework</PackageId>
     <RepositoryUrl>https://github.com/pauldeen79/ScriptCompiler</RepositoryUrl>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>
