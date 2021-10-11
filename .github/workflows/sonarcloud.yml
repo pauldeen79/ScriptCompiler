@@ -25,7 +25,8 @@ jobs:
           sonarProjectKey: ScriptCompiler
           sonarProjectName: ScriptCompiler
           sonarOrganization: pauldeen79
-          dotnetTestArguments: --logger trx --collect:"XPlat Code Coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover
+          dotnetBuildArguments: ScriptCompiler.sln
+          dotnetTestArguments: ScriptCompiler.sln --logger trx --collect:"XPlat Code Coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover
           sonarBeginArguments: /d:sonar.cs.opencover.reportsPaths="**/TestResults/**/coverage.opencover.xml" -d:sonar.cs.vstest.reportsPaths="**/TestResults/*.trx"
     env:
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
