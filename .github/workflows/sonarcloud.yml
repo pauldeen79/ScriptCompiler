@@ -22,7 +22,7 @@ jobs:
       - name: sonarscan-dotnet
         uses: highbyte/sonarscan-dotnet@2.0
         with:
-          sonarProjectKey: pauldeen79_ScriptCompiler
+          sonarProjectKey: ScriptCompiler
           sonarProjectName: ScriptCompiler
           sonarOrganization: pauldeen79
           dotnetTestArguments: --logger trx --collect:"XPlat Code Coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover
