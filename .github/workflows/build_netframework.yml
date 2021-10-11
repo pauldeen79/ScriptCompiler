@@ -22,7 +22,7 @@ jobs:
           nuget-api-key: ${{ secrets.NUGET_TOKEN }}
           nuget-version: 'latest'
       - name: Setup MSBuild.exe
-        uses: warrenbuckley/Setup-MSBuild@v1
+        uses: microsoft/setup-msbuild@v1.0.3
         env:
           working-directory: src
       - run: msbuild -t:restore ScriptCompiler.NetFramework.sln
