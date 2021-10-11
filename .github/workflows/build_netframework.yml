@@ -24,7 +24,7 @@ jobs:
       - name: Setup MSBuild.exe
         uses: microsoft/setup-msbuild@v1.0.3
       - run: msbuild -t:restore ScriptCompiler.NetFramework.sln
-      - run: msbuild -t:build ScriptCompiler.NetFramework.sln
+      - run: msbuild -t:build ScriptCompiler.NetFramework.sln /p:Configuration=Release
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v2
