@@ -28,14 +28,14 @@ jobs:
         with:
           dotnet-version: 5.0.x
       - name: Restore
-        run: dotnet restore
+        run: dotnet restore ScriptCompiler.sln
       - name: Build
-        run: dotnet build -c Release --no-restore
+        run: dotnet build ScriptCompiler.sln -c Release --no-restore
       - name: Test
-        run: dotnet test -c Release
+        run: dotnet test ScriptCompiler.sln -c Release
       - name: Pack
         if: matrix.os == 'ubuntu-latest'
-        run: dotnet pack -v normal -c Release -o ./artifacts --no-restore --include-symbols --include-source -p:PackageVersion=$GITHUB_RUN_ID
+        run: dotnet pack ScriptCompiler.sln -v normal -c Release -o ./artifacts --no-restore --include-symbols --include-source -p:PackageVersion=$GITHUB_RUN_ID
       - name: Upload Artifact
         if: matrix.os == 'ubuntu-latest'
         uses: actions/upload-artifact@v2
@@ -76,7 +76,7 @@ jobs:
           echo Version: $VERSION
           VERSION="${VERSION//v}"
           echo Clean Version: $VERSION
-          dotnet pack -v normal -c Release --include-symbols --include-source -p:PackageVersion=$VERSION -p:Version=$VERSION -o nupkg
+          dotnet pack ScriptCompiler.sln -v normal -c Release --include-symbols --include-source -p:PackageVersion=$VERSION -p:Version=$VERSION -o nupkg
       - name: Push to GitHub Feed
         run: |
           for f in ./nupkg/*.nupkg
