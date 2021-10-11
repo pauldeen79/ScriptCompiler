@@ -298,18 +298,14 @@ namespace MyNamespace
         public static string MyFunction() => Error();
     }
 }";
-            var packageReferences = new List<string>
-            {
-                "NETStandard.Library,2.0.3,.NETStandard,Version=v2.0"
-            };
 
             // Act
             var result = Sut.LoadScriptToMemory
             (
                 script,
-                Enumerable.Empty<string>(),
-                packageReferences,
-                GetTempPath(nameof(Invalid_Source_Returns_Errors)),
+                null,
+                null,
+                null,
                 null,
                 null
             );
