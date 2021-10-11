@@ -30,7 +30,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: nupkg
-          path: ./artifacts/*.nupkg
+          path: ./**/*.nupkg
   prerelease:
     needs: build
     if: github.ref == 'refs/heads/main'
