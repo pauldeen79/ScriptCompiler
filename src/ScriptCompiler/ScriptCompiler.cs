@@ -171,7 +171,6 @@ namespace ScriptCompiler
             foreach (var item in items)
             {
                 var filename = item.Split('/').Last();
-                var tempFilePath = Path.Combine(tempPath, filename);
                 if (filename.EndsWith(".dll") && RuntimeProvidedAssemblies.IsAssemblyProvidedByRuntime(filename))
                 {
                     // No need to store dll's that are provided by the run-time...
@@ -179,6 +178,7 @@ namespace ScriptCompiler
                 }
                 else
                 {
+                    var tempFilePath = Path.Combine(tempPath, filename);
                     if (!File.Exists(tempFilePath) && filename != "_._" && !filename.EndsWith(".xml") && !filename.EndsWith(".targets"))
                     {
                         packageReader.ExtractFile(item, tempFilePath, logger);
