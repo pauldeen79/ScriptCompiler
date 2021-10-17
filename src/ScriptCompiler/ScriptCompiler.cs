@@ -201,9 +201,7 @@ namespace ScriptCompiler
         }
 
         private static bool IsAssembly(string filename)
-        {
-            return filename != "_._" && !filename.EndsWith(".xml") && !filename.EndsWith(".targets");
-        }
+            => filename != "_._" && !filename.EndsWith(".xml") && !filename.EndsWith(".targets");
 
         private static IEnumerable<PackageDependency> GetDependencies(PackageArchiveReader packageReader,
                                                                       NuGet.Frameworks.NuGetFramework framework)
