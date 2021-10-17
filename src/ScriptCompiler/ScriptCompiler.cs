@@ -103,17 +103,17 @@ namespace ScriptCompiler
 
             foreach (string reference in packageReferences)
             {
-                if (!AddNugetReference(reference, references, tempPath, nugetPackageSourceUrl))
+                if (!AddPackageReference(reference, references, tempPath, nugetPackageSourceUrl))
                 {
                     throw new ArgumentException($"Adding package reference [{reference}] failed", nameof(packageReferences));
                 }
             }
         }
 
-        private static bool AddNugetReference(string reference,
-                                              ICollection<MetadataReference> references,
-                                              string tempPath,
-                                              string nugetPackageSourceUrl)
+        private static bool AddPackageReference(string reference,
+                                                ICollection<MetadataReference> references,
+                                                string tempPath,
+                                                string nugetPackageSourceUrl)
         {
             var split = reference.Split(',');
             if (split.Length < 2)
@@ -150,20 +150,12 @@ namespace ScriptCompiler
             {
                 return false;
             }
-            var shortFolderName = framework.GetShortFolderName();
-            var dependencies = GetDependencies(packageReader, framework);
-            foreach (var dependency in dependencies)
+            if (!AddDependencies(packageReader, framework, references, tempPath, nugetPackageSourceUrl))
             {
-                var fullReferenceName = $"{dependency.Id},{dependency.VersionRange.MinVersion},{framework.DotNetFrameworkName}";
-                var shortReferenceName = $"{dependency.Id},{dependency.VersionRange.MinVersion}";
-                if (!AddNugetReference(fullReferenceName, references, tempPath, nugetPackageSourceUrl)
-                    && !AddNugetReference(shortReferenceName, references, tempPath, nugetPackageSourceUrl))
-                {
-                    return false;
-                }
+                return false;
             }
-            var items = GetItems(packageReader, shortFolderName);
-            foreach (var item in items)
+            
+            foreach (var item in GetItems(packageReader, framework.GetShortFolderName()))
             {
                 var filename = item.Split('/').Last();
                 if (RuntimeProvidedAssemblies.IsAssemblyProvidedByRuntime(filename))
@@ -188,20 +180,37 @@ namespace ScriptCompiler
             return true;
         }
 
+        private static bool AddDependencies(PackageArchiveReader packageReader,
+                                            NuGet.Frameworks.NuGetFramework framework,
+                                            ICollection<MetadataReference> references,
+                                            string tempPath,
+                                            string nugetPackageSourceUrl)
+        {
+            foreach (var dependency in GetDependencies(packageReader, framework))
+            {
+                var fullReferenceName = $"{dependency.Id},{dependency.VersionRange.MinVersion},{framework.DotNetFrameworkName}";
+                var shortReferenceName = $"{dependency.Id},{dependency.VersionRange.MinVersion}";
+                if (!AddPackageReference(fullReferenceName, references, tempPath, nugetPackageSourceUrl)
+                    && !AddPackageReference(shortReferenceName, references, tempPath, nugetPackageSourceUrl))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
         private static bool IsAssembly(string filename)
         {
             return filename != "_._" && !filename.EndsWith(".xml") && !filename.EndsWith(".targets");
         }
 
-        private static IEnumerable<PackageDependency> GetDependencies(PackageArchiveReader packageReader, NuGet.Frameworks.NuGetFramework framework)
-        {
-            return packageReader.GetPackageDependencies().FirstOrDefault(x => x.TargetFramework == framework)?.Packages ?? Enumerable.Empty<PackageDependency>();
-        }
+        private static IEnumerable<PackageDependency> GetDependencies(PackageArchiveReader packageReader,
+                                                                      NuGet.Frameworks.NuGetFramework framework)
+            => packageReader.GetPackageDependencies().FirstOrDefault(x => x.TargetFramework == framework)?.Packages ?? Enumerable.Empty<PackageDependency>();
 
         private static NuGet.Frameworks.NuGetFramework GetFramework(string[] split, PackageArchiveReader packageReader)
-        {
-            return packageReader.GetSupportedFrameworks().FirstOrDefault(x => split.Length < 3 || x.DotNetFrameworkName == string.Join(",", split.Skip(2)));
-        }
+            => packageReader.GetSupportedFrameworks().FirstOrDefault(x => split.Length < 3 || x.DotNetFrameworkName == string.Join(",", split.Skip(2)));
 
         private static string[] GetItems(PackageArchiveReader packageReader, string shortFolderName)
         {
