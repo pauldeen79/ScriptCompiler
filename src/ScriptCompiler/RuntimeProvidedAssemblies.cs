@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Runtime.InteropServices;
 
 namespace ScriptCompiler
 {
@@ -11,7 +12,9 @@ namespace ScriptCompiler
         /// <returns>True if the assembly is provided by the framework, otherwise false.</returns>
         public static bool IsAssemblyProvidedByRuntime(string assembly)
         {
-            return ProvidedAssemblies.Contains(assembly);
+            //HACK: Only seems to work on Windows...
+            bool isWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
+            return isWindows && ProvidedAssemblies.Contains(assembly);
         }
         /*<# foreach (var filename in System.IO.Directory.GetFiles(@"C:\Program Files\dotnet\shared\Microsoft.NETCore.App\5.0.11", "*.dll"))
            { #>
@@ -74,14 +77,14 @@ namespace ScriptCompiler
             "Microsoft.DiaSymReader.Native.amd64.dll",
             "Microsoft.VisualBasic.Core.dll",
             "Microsoft.VisualBasic.dll",
-            //"Microsoft.Win32.Primitives.dll",
-            //"Microsoft.Win32.Registry.dll",
+            "Microsoft.Win32.Primitives.dll",
+            "Microsoft.Win32.Registry.dll",
             "mscordaccore.dll",
             "mscordaccore_amd64_amd64_5.0.1121.47308.dll",
             "mscordbi.dll",
             "mscorlib.dll",
             "mscorrc.dll",
-            //"netstandard.dll",
+            "netstandard.dll",
             "System.AppContext.dll",
             "System.Buffers.dll",
             "System.Collections.Concurrent.dll",
