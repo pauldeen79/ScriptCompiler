@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.IO;
 using System.Runtime.InteropServices;
 
 namespace ScriptCompiler
@@ -13,36 +12,14 @@ namespace ScriptCompiler
         /// <returns>True if the assembly is provided by the framework, otherwise false.</returns>
         public static bool IsAssemblyProvidedByRuntime(string assembly)
         {
-            return IsDotNetInstalled() && ProvidedAssemblies.Contains(assembly);
+            //HACK: Only seems to work on Windows...
+            bool isWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
+            return isWindows && ProvidedAssemblies.Contains(assembly);
         }
-
-        private static bool IsDotNetInstalled()
-        {
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            {
-#pragma warning disable S1075 // URIs should not be hardcoded
-                return Directory.Exists(@"C:\Program Files\dotnet\shared\Microsoft.NETCore.App");
-#pragma warning restore S1075 // URIs should not be hardcoded
-            }
-
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-            {
-                return Directory.Exists(@"/usr/local/share/dotnet/shared/Microsoft.NETCore.App/");
-            }
-
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-            {
-                return Directory.Exists(@"/usr/share/dotnet/shared/Microsoft.NETCore.App/");
-            }
-
-            //Unknown platform, let's keep it safe
-            return false;
-        }
-
         /*<# foreach (var filename in System.IO.Directory.GetFiles(@"C:\Program Files\dotnet\shared\Microsoft.NETCore.App\5.0.11", "*.dll"))
-  { #>
-"<#= filename.Split('\\').Last() #>",
-<# } #>*/
+           { #>
+        "<#= filename.Split('\\').Last() #>",
+        <# } #>*/
         /// <summary>
         /// This list comes from C:\Program Files\dotnet\shared\Microsoft.NETCore.App\5.0.11
         /// If the executing binaries ever change to a newer version, this project must update as well, and refresh this list.
