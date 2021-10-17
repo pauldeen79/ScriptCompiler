@@ -172,7 +172,6 @@ namespace ScriptCompiler
             {
                 var filename = item.Split('/').Last();
                 var tempFilePath = Path.Combine(tempPath, filename);
-                //if (filename.EndsWith(".dll") && (RuntimeProvidedPackages.IsPackageProvidedByRuntime(filename.Substring(0, filename.Length - 4)) || filename == "mscorlib.dll" || filename == "netstandard.dll" || filename == "System.dll" || filename == "System.Core.dll" || filename == "System.Data.dll" ))
                 if (filename.EndsWith(".dll") && RuntimeProvidedAssemblies.IsAssemblyProvidedByRuntime(filename))
                 {
                     // No need to store dll's that are provided by the run-time...
