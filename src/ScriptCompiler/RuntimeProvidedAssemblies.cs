@@ -81,7 +81,7 @@ namespace ScriptCompiler
             "mscordbi.dll",
             "mscorlib.dll",
             "mscorrc.dll",
-            "netstandard.dll",
+            //"netstandard.dll",
             "System.AppContext.dll",
             "System.Buffers.dll",
             "System.Collections.Concurrent.dll",
