@@ -120,6 +120,7 @@ namespace ScriptCompiler
             {
                 return false;
             }
+
             var logger = NullLogger.Instance;
             var cancellationToken = CancellationToken.None;
 
@@ -171,13 +172,22 @@ namespace ScriptCompiler
             {
                 var filename = item.Split('/').Last();
                 var tempFilePath = Path.Combine(tempPath, filename);
-                if (!File.Exists(tempFilePath))
+                //if (filename.EndsWith(".dll") && (RuntimeProvidedPackages.IsPackageProvidedByRuntime(filename.Substring(0, filename.Length - 4)) || filename == "mscorlib.dll" || filename == "netstandard.dll" || filename == "System.dll" || filename == "System.Core.dll" || filename == "System.Data.dll" ))
+                if (filename.EndsWith(".dll") && RuntimeProvidedAssemblies.IsAssemblyProvidedByRuntime(filename))
                 {
-                    packageReader.ExtractFile(item, tempFilePath, logger);
+                    // No need to store dll's that are provided by the run-time...
+                    references.Add(MetadataReference.CreateFromFile(filename));
                 }
-                if (item.EndsWith(".dll", StringComparison.OrdinalIgnoreCase))
+                else
                 {
-                    references.Add(MetadataReference.CreateFromFile(Path.Combine(tempPath, filename)));
+                    if (!File.Exists(tempFilePath) && filename != "_._" && !filename.EndsWith(".xml") && !filename.EndsWith(".targets"))
+                    {
+                        packageReader.ExtractFile(item, tempFilePath, logger);
+                    }
+                    if (item.EndsWith(".dll", StringComparison.OrdinalIgnoreCase))
+                    {
+                        references.Add(MetadataReference.CreateFromFile(Path.Combine(tempPath, filename)));
+                    }
                 }
             }
 
