@@ -158,22 +158,14 @@ namespace ScriptCompiler
             foreach (var item in GetItems(packageReader, framework.GetShortFolderName()))
             {
                 var filename = item.Split('/').Last();
-                if (RuntimeProvidedAssemblies.IsAssemblyProvidedByRuntime(filename))
+                var tempFilePath = Path.Combine(tempPath, filename);
+                if (!File.Exists(tempFilePath) && IsAssembly(filename))
                 {
-                    // No need to store dll's that are provided by the run-time...
-                    references.Add(MetadataReference.CreateFromFile(filename));
+                    packageReader.ExtractFile(item, tempFilePath, logger);
                 }
-                else
+                if (item.EndsWith(".dll", StringComparison.OrdinalIgnoreCase))
                 {
-                    var tempFilePath = Path.Combine(tempPath, filename);
-                    if (!File.Exists(tempFilePath) && IsAssembly(filename))
-                    {
-                        packageReader.ExtractFile(item, tempFilePath, logger);
-                    }
-                    if (item.EndsWith(".dll", StringComparison.OrdinalIgnoreCase))
-                    {
-                        references.Add(MetadataReference.CreateFromFile(Path.Combine(tempPath, filename)));
-                    }
+                    references.Add(MetadataReference.CreateFromFile(Path.Combine(tempPath, filename)));
                 }
             }
 
