@@ -29,6 +29,7 @@ namespace ScriptCompiler
         /// <param name="tempPath">Optional temporary path for extracting assemblies from package references. When not provided, the default temporary directory is used.</param>
         /// <param name="nugetPackageSourceUrl">Optional package source url for nuget packages. When not provided, nuget.org will be used.</param>
         /// <param name="customAssemblyLoadContext">Optional custom assembly load context.</param>
+        /// <param name="allowOptimalization">Boolean to determine whether framework assemblies need to be skipped when writing assemblies from package references.</param>
         /// <returns>
         /// The compiler results, or null when source is null.
         /// </returns>
@@ -37,7 +38,8 @@ namespace ScriptCompiler
                                                   IEnumerable<string> packageReferences,
                                                   string tempPath,
                                                   string nugetPackageSourceUrl,
-                                                  AssemblyLoadContext customAssemblyLoadContext)
+                                                  AssemblyLoadContext customAssemblyLoadContext,
+                                                  bool allowOptimalization)
         {
             if (source == null)
             {
@@ -48,7 +50,7 @@ namespace ScriptCompiler
             var references = new List<MetadataReference>();
 
             AddAssemblyReferences(referencedAssemblies, references);
-            AddPackageReferences(packageReferences, tempPath, nugetPackageSourceUrl, references);
+            AddPackageReferences(packageReferences, tempPath, nugetPackageSourceUrl, allowOptimalization, references);
 
             var compilation = CSharpCompilation.Create
             (
@@ -86,6 +88,7 @@ namespace ScriptCompiler
         private static void AddPackageReferences(IEnumerable<string> packageReferences,
                                                  string tempPath,
                                                  string nugetPackageSourceUrl,
+                                                 bool allowOptimalization,
                                                  List<MetadataReference> references)
         {
             if (packageReferences == null)
@@ -103,7 +106,7 @@ namespace ScriptCompiler
 
             foreach (string reference in packageReferences)
             {
-                if (!AddPackageReference(reference, references, tempPath, nugetPackageSourceUrl))
+                if (!AddPackageReference(reference, references, tempPath, nugetPackageSourceUrl, allowOptimalization))
                 {
                     throw new ArgumentException($"Adding package reference [{reference}] failed", nameof(packageReferences));
                 }
@@ -113,7 +116,8 @@ namespace ScriptCompiler
         private static bool AddPackageReference(string reference,
                                                 ICollection<MetadataReference> references,
                                                 string tempPath,
-                                                string nugetPackageSourceUrl)
+                                                string nugetPackageSourceUrl,
+                                                bool allowOptimalization)
         {
             var split = reference.Split(',');
             if (split.Length < 2)
@@ -146,19 +150,15 @@ namespace ScriptCompiler
 
             using var packageReader = new PackageArchiveReader(packageStream);
             var framework = GetFramework(split, packageReader);
-            if (framework == null)
+            if (!AddDependencies(packageReader, framework, references, tempPath, nugetPackageSourceUrl, allowOptimalization))
             {
                 return false;
             }
-            if (!AddDependencies(packageReader, framework, references, tempPath, nugetPackageSourceUrl))
-            {
-                return false;
-            }
-            
+
             foreach (var item in GetItems(packageReader, framework.GetShortFolderName()))
             {
                 var filename = item.Split('/').Last();
-                if (RuntimeProvidedAssemblies.IsAssemblyProvidedByRuntime(filename))
+                if (allowOptimalization && RuntimeProvidedAssemblies.IsAssemblyProvidedByRuntime(filename))
                 {
                     // No need to store dll's that are provided by the run-time...
                     references.Add(MetadataReference.CreateFromFile(filename));
@@ -184,14 +184,20 @@ namespace ScriptCompiler
                                             NuGet.Frameworks.NuGetFramework framework,
                                             ICollection<MetadataReference> references,
                                             string tempPath,
-                                            string nugetPackageSourceUrl)
+                                            string nugetPackageSourceUrl,
+                                            bool allowOptimalization)
         {
+            if (framework == null)
+            {
+                return false;
+            }
+
             foreach (var dependency in GetDependencies(packageReader, framework))
             {
                 var fullReferenceName = $"{dependency.Id},{dependency.VersionRange.MinVersion},{framework.DotNetFrameworkName}";
                 var shortReferenceName = $"{dependency.Id},{dependency.VersionRange.MinVersion}";
-                if (!AddPackageReference(fullReferenceName, references, tempPath, nugetPackageSourceUrl)
-                    && !AddPackageReference(shortReferenceName, references, tempPath, nugetPackageSourceUrl))
+                if (!AddPackageReference(fullReferenceName, references, tempPath, nugetPackageSourceUrl, allowOptimalization)
+                    && !AddPackageReference(shortReferenceName, references, tempPath, nugetPackageSourceUrl, allowOptimalization))
                 {
                     return false;
                 }

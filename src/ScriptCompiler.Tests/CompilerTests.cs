@@ -14,6 +14,8 @@ namespace ScriptCompiler.Tests
     [ExcludeFromCodeCoverage]
     public sealed class CompilerTests
     {
+        private const  bool AllowOptimalization = false; //Note that doesn't seem to work in Github actions...
+
         public ScriptCompiler Sut { get; }
 
         public CompilerTests()
@@ -55,7 +57,8 @@ namespace ScriptCompiler.Tests
                 packageReferences,
                 GetTempPath(nameof(Can_Compile_Script)),
                 null,
-                null
+                null,
+                AllowOptimalization
             );
 
             // Assert
@@ -104,7 +107,8 @@ namespace MyNamespace
                     packageReferences,
                     tempPath,
                     null,
-                    context
+                    context,
+                    AllowOptimalization
                 );
 
                 // Assert
@@ -159,7 +163,8 @@ namespace MyNamespace
                     packageReferences,
                     tempPath,
                     null,
-                    null
+                    null,
+                    AllowOptimalization
                 );
 
                 // Assert
@@ -214,7 +219,8 @@ namespace MyNamespace
                     packageReferences,
                     tempPath,
                     null,
-                    context
+                    context,
+                    AllowOptimalization
                 );
 
                 // Assert
@@ -269,7 +275,8 @@ namespace MyNamespace
                     packageReferences,
                     tempPath,
                     null,
-                    context
+                    context,
+                    AllowOptimalization
                 );
 
                 // Assert
@@ -291,7 +298,7 @@ namespace MyNamespace
         public void Null_Source_Throws()
         {
             // Act & Assert
-            Sut.Invoking(x => x.LoadScriptToMemory(null, null, null, null, null, null))
+            Sut.Invoking(x => x.LoadScriptToMemory(null, null, null, null, null, null, AllowOptimalization))
                .Should().Throw<ArgumentNullException>()
                .And.ParamName.Should().Be("source");
         }
@@ -316,7 +323,8 @@ namespace MyNamespace
                 null,
                 null,
                 null,
-                null
+                null,
+                AllowOptimalization
             );
 
             // Assert

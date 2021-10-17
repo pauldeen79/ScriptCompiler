@@ -12,9 +12,7 @@ namespace ScriptCompiler
         /// <returns>True if the assembly is provided by the framework, otherwise false.</returns>
         public static bool IsAssemblyProvidedByRuntime(string assembly)
         {
-            //HACK: Only seems to work on Windows...
-            bool isWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
-            return isWindows && ProvidedAssemblies.Contains(assembly);
+            return ProvidedAssemblies.Contains(assembly);
         }
         /*<# foreach (var filename in System.IO.Directory.GetFiles(@"C:\Program Files\dotnet\shared\Microsoft.NETCore.App\5.0.11", "*.dll"))
            { #>
