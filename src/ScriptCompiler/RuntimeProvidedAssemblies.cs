@@ -24,7 +24,7 @@ namespace ScriptCompiler
         /// This list comes from C:\Program Files\dotnet\shared\Microsoft.NETCore.App\5.0.11
         /// If the executing binaries ever change to a newer version, this project must update as well, and refresh this list.
         /// </summary>
-        private static readonly ISet<string> ProvidedAssemblies = new HashSet<string>
+        internal static readonly ISet<string> ProvidedAssemblies = new HashSet<string>
         {
             "api-ms-win-core-console-l1-1-0.dll",
             "api-ms-win-core-console-l1-2-0.dll",
