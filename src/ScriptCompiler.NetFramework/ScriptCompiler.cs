@@ -168,7 +168,7 @@ namespace ScriptCompiler.NetFramework
                     {
                         items = packageReader.GetFiles($"build/{shortFolderName}").ToArray();
                     }
-                    foreach (var item in items.Where(x => !x.EndsWith("mscorlib.dll")))
+                    foreach (var item in items)
                     {
                         var dllName = item.Split('/').Last();
                         if (originalReferencedAssemblies.Any(x => x.Split('\\').Last().Equals(dllName, StringComparison.OrdinalIgnoreCase)))
@@ -176,14 +176,22 @@ namespace ScriptCompiler.NetFramework
                             continue;
                         }
 
-                        var tempFilePath = Path.Combine(tempPath, dllName);
-                        if (!File.Exists(tempFilePath))
+                        if (dllName.EndsWith(".dll") && RuntimeProvidedAssemblies.IsAssemblyProvidedByRuntime(dllName))
                         {
-                            packageReader.ExtractFile(item, tempFilePath, logger);
+                            // No need to store dll's that are provided by the run-time...
+                            referencedAssemblies.Add(dllName);
                         }
-                        if (item.EndsWith(".dll", StringComparison.OrdinalIgnoreCase))
+                        else
                         {
-                            referencedAssemblies.Add(Path.Combine(tempPath, dllName));
+                            var tempFilePath = Path.Combine(tempPath, dllName);
+                            if (!File.Exists(tempFilePath))
+                            {
+                                packageReader.ExtractFile(item, tempFilePath, logger);
+                            }
+                            if (item.EndsWith(".dll", StringComparison.OrdinalIgnoreCase))
+                            {
+                                referencedAssemblies.Add(Path.Combine(tempPath, dllName));
+                            }
                         }
                     }
 
