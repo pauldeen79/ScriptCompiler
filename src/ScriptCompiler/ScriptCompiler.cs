@@ -145,14 +145,13 @@ namespace ScriptCompiler
             }
 
             using var packageReader = new PackageArchiveReader(packageStream);
-
-            var framework = packageReader.GetSupportedFrameworks().FirstOrDefault(x => split.Length < 3 || x.DotNetFrameworkName == string.Join(",", split.Skip(2)));
+            var framework = GetFramework(split, packageReader);
             if (framework == null)
             {
                 return false;
             }
             var shortFolderName = framework.GetShortFolderName();
-            var dependencies = packageReader.GetPackageDependencies().FirstOrDefault(x => x.TargetFramework == framework)?.Packages ?? Enumerable.Empty<PackageDependency>();
+            var dependencies = GetDependencies(packageReader, framework);
             foreach (var dependency in dependencies)
             {
                 var fullReferenceName = $"{dependency.Id},{dependency.VersionRange.MinVersion},{framework.DotNetFrameworkName}";
@@ -163,15 +162,11 @@ namespace ScriptCompiler
                     return false;
                 }
             }
-            var items = packageReader.GetFiles($"lib/{shortFolderName}").ToArray();
-            if (items.Length == 0)
-            {
-                items = packageReader.GetFiles($"build/{shortFolderName}").ToArray();
-            }
+            var items = GetItems(packageReader, shortFolderName);
             foreach (var item in items)
             {
                 var filename = item.Split('/').Last();
-                if (filename.EndsWith(".dll") && RuntimeProvidedAssemblies.IsAssemblyProvidedByRuntime(filename))
+                if (RuntimeProvidedAssemblies.IsAssemblyProvidedByRuntime(filename))
                 {
                     // No need to store dll's that are provided by the run-time...
                     references.Add(MetadataReference.CreateFromFile(filename));
@@ -179,7 +174,7 @@ namespace ScriptCompiler
                 else
                 {
                     var tempFilePath = Path.Combine(tempPath, filename);
-                    if (!File.Exists(tempFilePath) && filename != "_._" && !filename.EndsWith(".xml") && !filename.EndsWith(".targets"))
+                    if (!File.Exists(tempFilePath) && IsAssembly(filename))
                     {
                         packageReader.ExtractFile(item, tempFilePath, logger);
                     }
@@ -191,6 +186,32 @@ namespace ScriptCompiler
             }
 
             return true;
+        }
+
+        private static bool IsAssembly(string filename)
+        {
+            return filename != "_._" && !filename.EndsWith(".xml") && !filename.EndsWith(".targets");
+        }
+
+        private static IEnumerable<PackageDependency> GetDependencies(PackageArchiveReader packageReader, NuGet.Frameworks.NuGetFramework framework)
+        {
+            return packageReader.GetPackageDependencies().FirstOrDefault(x => x.TargetFramework == framework)?.Packages ?? Enumerable.Empty<PackageDependency>();
+        }
+
+        private static NuGet.Frameworks.NuGetFramework GetFramework(string[] split, PackageArchiveReader packageReader)
+        {
+            return packageReader.GetSupportedFrameworks().FirstOrDefault(x => split.Length < 3 || x.DotNetFrameworkName == string.Join(",", split.Skip(2)));
+        }
+
+        private static string[] GetItems(PackageArchiveReader packageReader, string shortFolderName)
+        {
+            var items = packageReader.GetFiles($"lib/{shortFolderName}").ToArray();
+            if (items.Length == 0)
+            {
+                items = packageReader.GetFiles($"build/{shortFolderName}").ToArray();
+            }
+
+            return items;
         }
 
         private static CompilerResults Compile(CSharpCompilation compilation, AssemblyLoadContext customAssemblyLoadContext)
