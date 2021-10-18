@@ -172,17 +172,10 @@ namespace ScriptCompiler
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) && RuntimeProvidedAssemblies.IsAssemblyProvidedByRuntime(filename))
             {
                 // No need to store dll's that are provided by the run-time...
-                if (reference == "NETStandard.Library,2.0.3,.NETStandard,Version=v2.0")
+                if (IsNetStandardReference(reference, out var version, out var product)
+                    && File.Exists(Path.Combine(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), "dotnet", "sdk", "NuGetFallbackFolder", "netstandard.library", version, "build", product, "ref"), filename)))
                 {
-                    var netStandardPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), "dotnet", "sdk", "NuGetFallbackFolder", "netstandard.library", "2.0.3", "build", "netstandard2.0", "ref");
-                    if (File.Exists(Path.Combine(netStandardPath, filename)))
-                    {
-                        references.Add(MetadataReference.CreateFromFile(Path.Combine(netStandardPath, filename)));
-                    }
-                    else
-                    {
-                        references.Add(MetadataReference.CreateFromFile(Path.Combine(Path.GetDirectoryName(typeof(object).Assembly.Location), filename)));
-                    }
+                    references.Add(MetadataReference.CreateFromFile(Path.Combine(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), "dotnet", "sdk", "NuGetFallbackFolder", "netstandard.library", version, "build", product, "ref"), filename)));
                 }
                 else
                 {
@@ -201,6 +194,20 @@ namespace ScriptCompiler
                     references.Add(MetadataReference.CreateFromFile(Path.Combine(tempPath, filename)));
                 }
             }
+        }
+
+        private static bool IsNetStandardReference(string reference, out string version, out string product)
+        {
+            version = null;
+            product = null;
+            if (reference != "NETStandard.Library,2.0.3,.NETStandard,Version=v2.0")
+            {
+                return false;
+            }
+
+            version = "2.0.3";
+            product = "netstandard2.0";
+            return true;
         }
 
         private static bool AddDependencies(PackageArchiveReader packageReader,
