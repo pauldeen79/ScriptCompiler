@@ -10,7 +10,6 @@ namespace ScriptCompiler
                                            IEnumerable<string> packageReferences,
                                            string tempPath,
                                            string nugetPackageSourceUrl,
-                                           AssemblyLoadContext customAssemblyLoadContext,
-                                           bool allowOptimalization);
+                                           AssemblyLoadContext customAssemblyLoadContext);
     }
 }
