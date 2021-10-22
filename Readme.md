@@ -25,7 +25,7 @@ var result = scriptCompiler.LoadScriptToMemory
     sourceCode,
     Enumerable.Empty<string>(),
     new[] { "NETStandard.Library,2.0.3,.NETStandard,Version=v2.0" },
-    GetTempPath(nameof(Can_Compile_Script)),
+    null,
     null,
     null
 );
