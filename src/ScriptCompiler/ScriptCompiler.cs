@@ -198,8 +198,8 @@ namespace ScriptCompiler
 
         private static bool IsNetStandardReference(string reference, out string version, out string product)
         {
-            version = null;
-            product = null;
+            version = string.Empty;
+            product = string.Empty;
             if (reference != "NETStandard.Library,2.0.3,.NETStandard,Version=v2.0")
             {
                 return false;
@@ -236,7 +236,7 @@ namespace ScriptCompiler
         }
 
         private static bool IsAssembly(string filename)
-            => filename != "_._" && !filename.EndsWith(".xml") && !filename.EndsWith(".targets");
+            => filename != "_._" && !filename.EndsWith(".xml", StringComparison.OrdinalIgnoreCase) && !filename.EndsWith(".targets", StringComparison.OrdinalIgnoreCase);
 
         private static IEnumerable<PackageDependency> GetDependencies(PackageArchiveReader packageReader,
                                                                       NuGet.Frameworks.NuGetFramework framework)

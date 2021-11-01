@@ -5,6 +5,7 @@
     <EnableNETAnalyzers>true</EnableNETAnalyzers>
     <AnalysisLevel>latest</AnalysisLevel>
     <LangVersion>8.0</LangVersion>
+    <Nullable>enable</Nullable>
     <PackageId>pauldeen79.ScriptCompiler.ScriptCompiler</PackageId>
     <RepositoryUrl>https://github.com/pauldeen79/ScriptCompiler</RepositoryUrl>
   </PropertyGroup>
