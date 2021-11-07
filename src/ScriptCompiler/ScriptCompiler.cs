@@ -36,15 +36,10 @@ namespace ScriptCompiler
         public CompilerResults LoadScriptToMemory(string source,
                                                   IEnumerable<string> referencedAssemblies,
                                                   IEnumerable<string> packageReferences,
-                                                  string tempPath,
-                                                  string nugetPackageSourceUrl,
-                                                  AssemblyLoadContext customAssemblyLoadContext)
+                                                  string? tempPath,
+                                                  string? nugetPackageSourceUrl,
+                                                  AssemblyLoadContext? customAssemblyLoadContext)
         {
-            if (source == null)
-            {
-                throw new ArgumentNullException(nameof(source));
-            }
-
             var syntaxTree = CSharpSyntaxTree.ParseText(source, options: new CSharpParseOptions().WithPreprocessorSymbols("TRACE"));
             var references = new List<MetadataReference>();
 
@@ -66,11 +61,6 @@ namespace ScriptCompiler
 
         private static void AddAssemblyReferences(IEnumerable<string> referencedAssemblies, List<MetadataReference> references)
         {
-            if (referencedAssemblies == null)
-            {
-                return;
-            }
-            
             foreach (string reference in referencedAssemblies)
             {
                 if (reference.Contains(","))
@@ -85,15 +75,10 @@ namespace ScriptCompiler
         }
 
         private static void AddPackageReferences(IEnumerable<string> packageReferences,
-                                                 string tempPath,
-                                                 string nugetPackageSourceUrl,
+                                                 string? tempPath,
+                                                 string? nugetPackageSourceUrl,
                                                  List<MetadataReference> references)
         {
-            if (packageReferences == null)
-            {
-                return;
-            }
-
             tempPath = string.IsNullOrEmpty(tempPath)
                 ? Path.GetTempPath()
                 : tempPath;
@@ -113,8 +98,8 @@ namespace ScriptCompiler
 
         private static bool AddPackageReference(string reference,
                                                 ICollection<MetadataReference> references,
-                                                string tempPath,
-                                                string nugetPackageSourceUrl)
+                                                string? tempPath,
+                                                string? nugetPackageSourceUrl)
         {
             var split = reference.Split(',');
             if (split.Length < 2)
@@ -163,7 +148,7 @@ namespace ScriptCompiler
 
         private static void AddItemToReferences(string reference,
                                                 ICollection<MetadataReference> references,
-                                                string tempPath,
+                                                string? tempPath,
                                                 ILogger logger,
                                                 PackageArchiveReader packageReader,
                                                 string item,
@@ -213,8 +198,8 @@ namespace ScriptCompiler
         private static bool AddDependencies(PackageArchiveReader packageReader,
                                             NuGet.Frameworks.NuGetFramework framework,
                                             ICollection<MetadataReference> references,
-                                            string tempPath,
-                                            string nugetPackageSourceUrl)
+                                            string? tempPath,
+                                            string? nugetPackageSourceUrl)
         {
             if (framework == null)
             {
@@ -256,7 +241,7 @@ namespace ScriptCompiler
             return items;
         }
 
-        private static CompilerResults Compile(CSharpCompilation compilation, AssemblyLoadContext customAssemblyLoadContext)
+        private static CompilerResults Compile(CSharpCompilation compilation, AssemblyLoadContext? customAssemblyLoadContext)
         {
             using var ms = new MemoryStream();
             var result = compilation.Emit(ms);

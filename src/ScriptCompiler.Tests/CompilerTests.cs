@@ -288,15 +288,6 @@ namespace MyNamespace
         }
 
         [Fact]
-        public void Null_Source_Throws()
-        {
-            // Act & Assert
-            Sut.Invoking(x => x.LoadScriptToMemory(null, null, null, null, null, null))
-               .Should().Throw<ArgumentNullException>()
-               .And.ParamName.Should().Be("source");
-        }
-
-        [Fact]
         public void Invalid_Source_Returns_Errors()
         {
             // Arrange
@@ -312,8 +303,8 @@ namespace MyNamespace
             var result = Sut.LoadScriptToMemory
             (
                 script,
-                null,
-                null,
+                Enumerable.Empty<string>(),
+                Enumerable.Empty<string>(),
                 null,
                 null,
                 null
