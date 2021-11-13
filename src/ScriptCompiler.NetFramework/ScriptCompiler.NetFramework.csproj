@@ -2,20 +2,19 @@
 
   <PropertyGroup>
     <TargetFramework>net48</TargetFramework>
-    <EnableNETAnalyzers>true</EnableNETAnalyzers>
-    <AnalysisLevel>latest</AnalysisLevel>
     <LangVersion>8.0</LangVersion>
     <PackageId>pauldeen79.ScriptCompiler.ScriptCompiler.NetFramework</PackageId>
     <PackageVersion>1.0.4</PackageVersion>
     <RepositoryUrl>https://github.com/pauldeen79/ScriptCompiler</RepositoryUrl>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <CodeAnalysisRuleSet>..\..\.sonarlint\scriptcompilercsharp.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="5.0.3">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
+    <AdditionalFiles Include="..\..\.sonarlint\scriptcompiler\CSharp\SonarLint.xml" Link="SonarLint.xml" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="5.0.0" />
     <PackageReference Include="NuGet.Protocol" Version="5.11.0" />
   </ItemGroup>
