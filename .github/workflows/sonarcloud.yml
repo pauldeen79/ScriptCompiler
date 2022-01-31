@@ -20,7 +20,7 @@ jobs:
         run: |
           git fetch --no-tags --prune --depth=1 origin main
       - name: sonarscan-dotnet
-        uses: highbyte/sonarscan-dotnet@2.0
+        uses: highbyte/sonarscan-dotnet@v2.1.2
         with:
           sonarProjectKey: ScriptCompiler
           sonarProjectName: ScriptCompiler
