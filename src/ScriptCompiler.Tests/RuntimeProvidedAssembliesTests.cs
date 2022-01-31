@@ -1,16 +1,10 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using FluentAssertions;
-using Xunit;
+﻿namespace ScriptCompiler.Tests;
 
-namespace ScriptCompiler.Tests
+public class RuntimeProvidedAssembliesTests
 {
-    [ExcludeFromCodeCoverage]
-    public class RuntimeProvidedAssembliesTests
+    [Fact]
+    public void ProvidedAssemblies_Contains_Netstandard()
     {
-        [Fact]
-        public void ProvidedAssemblies_Contains_Netstandard()
-        {
-            RuntimeProvidedAssemblies.ProvidedAssemblies.Should().Contain("netstandard.dll");
-        }
+        RuntimeProvidedAssemblies.ProvidedAssemblies.Should().Contain("netstandard.dll");
     }
 }
