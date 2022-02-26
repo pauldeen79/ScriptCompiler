@@ -47,9 +47,9 @@ public sealed class CompilerTests
         );
 
         // Assert
+        result.Errors.Should().BeEmpty();
         result.IsSuccessful.Should().BeTrue();
         result.Diagnostics.HasErrors().Should().BeFalse();
-        result.Errors.Should().BeEmpty();
         result.CompiledAssembly.Should().NotBeNull();
         var myClass = result.CompiledAssembly.GetExportedTypes().FirstOrDefault(x => x.Name == "MyClass");
         myClass.Should().NotBeNull();
@@ -73,7 +73,7 @@ namespace MyNamespace
         var packageReferences = new List<string>
         {
             "NETStandard.Library,2.0.3,.NETStandard,Version=v2.0",
-            "pauldeen79.CrossCutting.Data.Abstractions,1.1.0"
+            "pauldeen79.CrossCutting.Data.Abstractions,2.7.5"
         };
         var tempPath = GetTempPath(nameof(Can_Compile_Script_With_Nuget_Reference));
         var context = AssemblyLoadContext.Default;
@@ -96,9 +96,9 @@ namespace MyNamespace
             );
 
             // Assert
+            result.Errors.Should().BeEmpty();
             result.IsSuccessful.Should().BeTrue();
             result.Diagnostics.HasErrors().Should().BeFalse();
-            result.Errors.Should().BeEmpty();
             result.CompiledAssembly.Should().NotBeNull();
             var myClass = result.CompiledAssembly.GetExportedTypes().FirstOrDefault(x => x.Name == "MyClass");
             myClass.Should().NotBeNull();
@@ -151,9 +151,9 @@ namespace MyNamespace
             );
 
             // Assert
+            result.Errors.Should().BeEmpty();
             result.IsSuccessful.Should().BeTrue();
             result.Diagnostics.HasErrors().Should().BeFalse();
-            result.Errors.Should().BeEmpty();
             result.CompiledAssembly.Should().NotBeNull();
             var myClass = result.CompiledAssembly.GetExportedTypes().FirstOrDefault(x => x.Name == "MyClass");
             myClass.Should().NotBeNull();
@@ -170,19 +170,19 @@ namespace MyNamespace
     public void Can_Compile_Script_With_Recursive_Nuget_Reference()
     {
         // Arrange
-        var script = @"using CrossCutting.Data.Core;
+        var script = @"using CrossCutting.Data.Core.Commands;
 
 namespace MyNamespace
 {
     public static class MyClass
     {
-        public static string MyFunction() => typeof(SqlTextCommand).Name;
+        public static string MyFunction() => typeof(SqlDatabaseCommand).Name;
     }
 }";
         var packageReferences = new List<string>
         {
             "NETStandard.Library,2.0.3,.NETStandard,Version=v2.0",
-            "pauldeen79.CrossCutting.Data.Core,1.1.0"
+            "pauldeen79.CrossCutting.Data.Core,2.7.5"
         };
         var tempPath = GetTempPath(nameof(Can_Compile_Script_With_Recursive_Nuget_Reference));
 
@@ -206,14 +206,14 @@ namespace MyNamespace
             );
 
             // Assert
+            result.Errors.Should().BeEmpty();
             result.IsSuccessful.Should().BeTrue();
             result.Diagnostics.HasErrors().Should().BeFalse();
-            result.Errors.Should().BeEmpty();
             result.CompiledAssembly.Should().NotBeNull();
             var myClass = result.CompiledAssembly.GetExportedTypes().FirstOrDefault(x => x.Name == "MyClass");
             myClass.Should().NotBeNull();
             var functionResult = myClass.GetMethod("MyFunction").Invoke(null, null) as string;
-            functionResult.Should().Be(@"SqlTextCommand");
+            functionResult.Should().Be(@"SqlDatabaseCommand");
         }
         finally
         {
@@ -261,6 +261,7 @@ namespace MyNamespace
             );
 
             // Assert
+            result.Errors.Should().BeEmpty();
             result.IsSuccessful.Should().BeTrue();
             result.Diagnostics.HasErrors().Should().BeFalse();
             result.CompiledAssembly.Should().NotBeNull();
