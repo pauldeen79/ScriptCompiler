@@ -124,59 +124,28 @@ public class ScriptCompiler : IScriptCompiler
         foreach (var item in GetItems(packageReader, framework.GetShortFolderName()))
         {
             var filename = item.Split('/').Last();
-            AddItemToReferences(reference, references, tempPath, logger, packageReader, item, filename);
+            AddItemToReferences(references, tempPath, logger, packageReader, item, filename);
         }
 
         return true;
     }
 
-    private static void AddItemToReferences(string reference,
-                                            ICollection<MetadataReference> references,
+    private static void AddItemToReferences(ICollection<MetadataReference> references,
                                             string? tempPath,
                                             ILogger logger,
                                             PackageArchiveReader packageReader,
                                             string item,
                                             string filename)
     {
-        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) && RuntimeProvidedAssemblies.IsAssemblyProvidedByRuntime(filename))
+        var tempFilePath = Path.Combine(tempPath, filename);
+        if (!File.Exists(tempFilePath) && IsAssembly(filename))
         {
-            // No need to store dll's that are provided by the run-time...
-            if (IsNetStandardReference(reference, out var version, out var product)
-                && File.Exists(Path.Combine(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), "dotnet", "sdk", "NuGetFallbackFolder", "netstandard.library", version, "build", product, "ref"), filename)))
-            {
-                references.Add(MetadataReference.CreateFromFile(Path.Combine(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), "dotnet", "sdk", "NuGetFallbackFolder", "netstandard.library", version, "build", product, "ref"), filename)));
-            }
-            else
-            {
-                references.Add(MetadataReference.CreateFromFile(Path.Combine(Path.GetDirectoryName(typeof(object).Assembly.Location), filename)));
-            }
+            packageReader.ExtractFile(item, tempFilePath, logger);
         }
-        else
+        if (item.EndsWith(".dll", StringComparison.OrdinalIgnoreCase))
         {
-            var tempFilePath = Path.Combine(tempPath, filename);
-            if (!File.Exists(tempFilePath) && IsAssembly(filename))
-            {
-                packageReader.ExtractFile(item, tempFilePath, logger);
-            }
-            if (item.EndsWith(".dll", StringComparison.OrdinalIgnoreCase))
-            {
-                references.Add(MetadataReference.CreateFromFile(Path.Combine(tempPath, filename)));
-            }
+            references.Add(MetadataReference.CreateFromFile(Path.Combine(tempPath, filename)));
         }
-    }
-
-    private static bool IsNetStandardReference(string reference, out string version, out string product)
-    {
-        version = string.Empty;
-        product = string.Empty;
-        if (reference != "NETStandard.Library,2.0.3,.NETStandard,Version=v2.0")
-        {
-            return false;
-        }
-
-        version = "2.0.3";
-        product = "netstandard2.0";
-        return true;
     }
 
     private static bool AddDependencies(PackageArchiveReader packageReader,
