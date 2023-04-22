@@ -15,12 +15,12 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: 6.0.x
+          dotnet-version: 7.0.x
       - name: Fetch origin/main
         run: |
           git fetch --no-tags --prune --depth=1 origin main
       - name: sonarscan-dotnet
-        uses: highbyte/sonarscan-dotnet@v2.1.2
+        uses: highbyte/sonarscan-dotnet@v2.2.2
         with:
           sonarProjectKey: ScriptCompiler
           sonarProjectName: ScriptCompiler
