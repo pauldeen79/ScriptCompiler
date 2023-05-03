@@ -22,7 +22,7 @@ jobs:
           nuget-api-key: ${{ secrets.NUGET_TOKEN }}
           nuget-version: 'latest'
       - name: Setup MSBuild.exe
-        uses: microsoft/setup-msbuild@v1.0.3
+        uses: microsoft/setup-msbuild@v1.1
       - run: msbuild -t:restore ScriptCompiler.NetFramework.sln
       - run: msbuild -t:build ScriptCompiler.NetFramework.sln /p:Configuration=Release
 
@@ -36,9 +36,9 @@ jobs:
     if: github.event_name == 'release'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Setup .NET Core
-        uses: actions/setup-dotnet@v1
+        uses: actions/setup-dotnet@v3
         with:
           dotnet-version: 3.1.301
       - name: Download Artifact
