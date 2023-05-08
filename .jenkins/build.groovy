@@ -17,6 +17,7 @@ node {
         sh 'dotnet pack ScriptCompiler.sln -v normal -c Release -o ./artifacts --no-restore --include-symbols --include-source -p:PackageVersion=1.0.$BUILD_NUMBER'
     }
     stage('Publish artifacts') {
-        archiveArtifacts artifacts: 'artifacts/pauldeen79.ScriptCompiler.ScriptCompiler.*', followSymlinks: false, onlyIfSuccessful: true
+        archiveArtifacts artifacts: 'artifacts/pauldeen79.ScriptCompiler.ScriptCompiler.*', followSymlinks: false
+        junit "TestResults/1.0.0.${BUILD_NUMBER}/results.xml"
     }
 }
