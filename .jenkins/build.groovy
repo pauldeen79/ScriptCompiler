@@ -10,7 +10,8 @@ node {
         sh 'dotnet build ScriptCompiler.sln --no-restore'
     }
     stage('Run tests') {
-        sh 'dotnet test ScriptCompiler.sln -c Release --no-restore'
+        sh 'dotnet add ./src/ScriptCompiler.Tests/ScriptCompiler.Tests.csproj package JUnitTestLogger --version 1.1.0'
+        sh 'dotnet test ScriptCompiler.sln -c Release --no-restore --logger \"junit;LogFilePath=\"${WORKSPACE}\"'
     }
     stage('Create package') {
         sh 'dotnet pack ScriptCompiler.sln -v normal -c Release -o ./artifacts --no-restore --include-symbols --include-source -p:PackageVersion=1.0.$BUILD_NUMBER'
