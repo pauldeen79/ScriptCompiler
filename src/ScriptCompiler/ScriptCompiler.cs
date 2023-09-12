@@ -123,7 +123,8 @@ public class ScriptCompiler : IScriptCompiler
 
         foreach (var item in GetItems(packageReader, framework.GetShortFolderName()))
         {
-            var filename = item.Split('/').Last();
+            var itemSplit = item.Split('/');
+            var filename = itemSplit[itemSplit.Length - 1];
             AddItemToReferences(references, tempPath, logger, packageReader, item, filename);
         }
 

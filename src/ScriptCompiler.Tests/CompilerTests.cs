@@ -51,7 +51,7 @@ public sealed class CompilerTests
         result.IsSuccessful.Should().BeTrue();
         result.Diagnostics.HasErrors().Should().BeFalse();
         result.CompiledAssembly.Should().NotBeNull();
-        var myClass = result.CompiledAssembly.GetExportedTypes().FirstOrDefault(x => x.Name == "MyClass");
+        var myClass = Array.Find(result.CompiledAssembly.GetExportedTypes(), x => x.Name == "MyClass");
         myClass.Should().NotBeNull();
         var functionResult = myClass.GetMethod("MyFunction").Invoke(null, null) as string;
         functionResult.Should().Be("Hello world");
@@ -100,7 +100,7 @@ namespace MyNamespace
             result.IsSuccessful.Should().BeTrue();
             result.Diagnostics.HasErrors().Should().BeFalse();
             result.CompiledAssembly.Should().NotBeNull();
-            var myClass = result.CompiledAssembly.GetExportedTypes().FirstOrDefault(x => x.Name == "MyClass");
+            var myClass = Array.Find(result.CompiledAssembly.GetExportedTypes(), x => x.Name == "MyClass");
             myClass.Should().NotBeNull();
             var functionResult = myClass.GetMethod("MyFunction").Invoke(null, null) as string;
             functionResult.Should().Be("IDatabaseCommand");
@@ -155,7 +155,7 @@ namespace MyNamespace
             result.IsSuccessful.Should().BeTrue();
             result.Diagnostics.HasErrors().Should().BeFalse();
             result.CompiledAssembly.Should().NotBeNull();
-            var myClass = result.CompiledAssembly.GetExportedTypes().FirstOrDefault(x => x.Name == "MyClass");
+            var myClass = Array.Find(result.CompiledAssembly.GetExportedTypes(), x => x.Name == "MyClass");
             myClass.Should().NotBeNull();
             var functionResult = myClass.GetMethod("MyFunction").Invoke(null, null) as string;
             functionResult.Should().Be("CompilerTests");
@@ -210,7 +210,7 @@ namespace MyNamespace
             result.IsSuccessful.Should().BeTrue();
             result.Diagnostics.HasErrors().Should().BeFalse();
             result.CompiledAssembly.Should().NotBeNull();
-            var myClass = result.CompiledAssembly.GetExportedTypes().FirstOrDefault(x => x.Name == "MyClass");
+            var myClass = Array.Find(result.CompiledAssembly.GetExportedTypes(), x => x.Name == "MyClass");
             myClass.Should().NotBeNull();
             var functionResult = myClass.GetMethod("MyFunction").Invoke(null, null) as string;
             functionResult.Should().Be(@"SqlDatabaseCommand");
@@ -265,7 +265,7 @@ namespace MyNamespace
             result.IsSuccessful.Should().BeTrue();
             result.Diagnostics.HasErrors().Should().BeFalse();
             result.CompiledAssembly.Should().NotBeNull();
-            var myClass = result.CompiledAssembly.GetExportedTypes().FirstOrDefault(x => x.Name == "MyClass");
+            var myClass = Array.Find(result.CompiledAssembly.GetExportedTypes(), x => x.Name == "MyClass");
             myClass.Should().NotBeNull();
             var functionResult = myClass.GetMethod("MyFunction").Invoke(null, null) as string;
             functionResult.Should().Be(@"{""Property"":1}");
