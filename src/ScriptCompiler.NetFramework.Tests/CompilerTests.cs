@@ -1,10 +1,10 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using FluentAssertions;
+using Shouldly;
 using Xunit;
 
 namespace ScriptCompiler.NetFramework.Tests
@@ -58,11 +58,11 @@ namespace ScriptCompiler.NetFramework.Tests
             );
 
             // Assert
-            result.CompiledAssembly.Should().NotBeNull();
+            result.CompiledAssembly.ShouldNotBeNull();
             var myClass = result.CompiledAssembly.GetExportedTypes().FirstOrDefault(x => x.Name == "MyClass");
-            myClass.Should().NotBeNull();
+            myClass.ShouldNotBeNull();
             var functionResult = myClass.GetMethod("MyFunction").Invoke(null, null) as string;
-            functionResult.Should().Be("Hello world");
+            functionResult.ShouldBe("Hello world");
         }
 
         [Fact]
@@ -100,11 +100,11 @@ namespace MyNamespace
                 );
 
                 // Assert
-                result.CompiledAssembly.Should().NotBeNull();
+                result.CompiledAssembly.ShouldNotBeNull();
                 var myClass = result.CompiledAssembly.GetExportedTypes().FirstOrDefault(x => x.Name == "MyClass");
-                myClass.Should().NotBeNull();
+                myClass.ShouldNotBeNull();
                 var functionResult = myClass.GetMethod("MyFunction").Invoke(null, null) as string;
-                functionResult.Should().Be("IDatabaseCommand");
+                functionResult.ShouldBe("IDatabaseCommand");
             }
             finally
             {
@@ -142,11 +142,11 @@ namespace MyNamespace
                 );
 
                 // Assert
-                result.CompiledAssembly.Should().NotBeNull();
+                result.CompiledAssembly.ShouldNotBeNull();
                 var myClass = result.CompiledAssembly.GetExportedTypes().FirstOrDefault(x => x.Name == "MyClass");
-                myClass.Should().NotBeNull();
+                myClass.ShouldNotBeNull();
                 var functionResult = myClass.GetMethod("MyFunction").Invoke(null, null) as string;
-                functionResult.Should().Be("CompilerTests");
+                functionResult.ShouldBe("CompilerTests");
             }
             finally
             {
@@ -189,11 +189,11 @@ namespace MyNamespace
                 );
 
                 // Assert
-                result.CompiledAssembly.Should().NotBeNull();
+                result.CompiledAssembly.ShouldNotBeNull();
                 var myClass = result.CompiledAssembly.GetExportedTypes().FirstOrDefault(x => x.Name == "MyClass");
-                myClass.Should().NotBeNull();
+                myClass.ShouldNotBeNull();
                 var functionResult = myClass.GetMethod("MyFunction").Invoke(null, null) as string;
-                functionResult.Should().Be(@"SqlTextCommand");
+                functionResult.ShouldBe(@"SqlTextCommand");
             }
             finally
             {
@@ -237,11 +237,11 @@ namespace MyNamespace
                 );
 
                 // Assert
-                result.CompiledAssembly.Should().NotBeNull();
+                result.CompiledAssembly.ShouldNotBeNull();
                 var myClass = result.CompiledAssembly.GetExportedTypes().FirstOrDefault(x => x.Name == "MyClass");
-                myClass.Should().NotBeNull();
+                myClass.ShouldNotBeNull();
                 var functionResult = myClass.GetMethod("MyFunction").Invoke(null, null) as string;
-                functionResult.Should().Be(@"{""Property"":1}");
+                functionResult.ShouldBe(@"{""Property"":1}");
             }
             finally
             {
@@ -254,8 +254,8 @@ namespace MyNamespace
         {
             // Act & Assert
             Sut.Invoking(x => x.LoadScriptToMemory(null, null, null, null, null, null))
-               .Should().Throw<ArgumentNullException>()
-               .And.ParamName.Should().Be("source");
+               .ShouldThrow<ArgumentNullException>()
+               .And.ParamName.ShouldBe("source");
         }
 
         [Fact]
@@ -282,8 +282,8 @@ namespace MyNamespace
             );
 
             // Assert
-            result.Errors.Count.Should().Be(1);
-            result.Invoking(x => x.CompiledAssembly).Should().Throw<Exception>();
+            result.Errors.Count.ShouldBe(1);
+            result.Invoking(x => x.CompiledAssembly).ShouldThrow<Exception>();
         }
 
         private Assembly CustomResolve(ResolveEventArgs args, string directory)

@@ -4,6 +4,6 @@ global using System.IO;
 global using System.Linq;
 global using System.Reflection;
 global using System.Runtime.Loader;
-global using FluentAssertions;
 global using ScriptCompiler.Extensions;
+global using Shouldly;
 global using Xunit;
