@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
@@ -19,7 +19,7 @@ namespace ScriptCompiler.NetFramework.Tests
             Sut = new ScriptCompiler();
         }
 
-        public string GetTempPath(string suffix)
+        public static string GetTempPath(string suffix)
         {
             var result = Path.Combine(Path.GetTempPath(), $"UTF_{suffix}");
             if (!string.IsNullOrEmpty(result) && Directory.Exists(result))
@@ -253,9 +253,9 @@ namespace MyNamespace
         public void Null_Source_Throws()
         {
             // Act & Assert
-            Sut.Invoking(x => x.LoadScriptToMemory(null, null, null, null, null, null))
-               .ShouldThrow<ArgumentNullException>()
-               .And.ParamName.ShouldBe("source");
+            Action a = () => Sut.LoadScriptToMemory(null, null, null, null, null, null);
+            a.ShouldThrow<ArgumentNullException>()
+             .ParamName.ShouldBe("source");
         }
 
         [Fact]
@@ -283,10 +283,11 @@ namespace MyNamespace
 
             // Assert
             result.Errors.Count.ShouldBe(1);
-            result.Invoking(x => x.CompiledAssembly).ShouldThrow<Exception>();
+            Action a = () => _ = result.CompiledAssembly;
+            a.ShouldThrow<Exception>();
         }
 
-        private Assembly CustomResolve(ResolveEventArgs args, string directory)
+        private static Assembly CustomResolve(ResolveEventArgs args, string directory)
         {
             var dllName = args.Name.Split(',')[0] + ".dll";
             var fullPath = Path.Combine(directory, dllName);
